@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finguide AI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <div class="landing-page" id="landingPage">
+      <header class="landing-header">
+        <img src="logo.png" alt="Finguide" class="brand-logo" />
+        <button class="primary-btn" onclick="openWorkspace()">Log In</button>
+      </header>
+      <main class="landing-main">
+        <section class="hero-section">
+          <h1>Управляйте финансами бизнеса в Казахстане с AI-наставником</h1>
+          <p>Автоматический расчет НДС, налогов для ИП, планирование маржи и персональный менторинг в один клик. Без сложных таблиц и дорогих консультантов.</p>
+          <button class="cta-btn" onclick="openWorkspace()">Запустить Finguide AI бесплатно <i data-lucide="arrow-right"></i></button>
+        </section>
+        
+        <section class="stats-section">
+          <div class="stat-card">
+            <h2 class="counter" data-target="150000" data-prefix=">">0</h2>
+            <p>ИП нуждаются в оптимизации налогов</p>
+          </div>
+          <div class="stat-card">
+            <h2>₸ 0</h2>
+            <p>Стоимость базовой консультации с Gemini 2.5 Flash</p>
+          </div>
+          <div class="stat-card">
+            <h2>< 3 сек</h2>
+            <p>Скорость генерации финансового плана</p>
+          </div>
+          <div class="stat-card">
+            <h2 class="counter" data-target="-25" data-suffix="%">0</h2>
+            <p>Среднее сокращение хаотичных расходов</p>
+          </div>
+        </section>
+
+        <section class="showcase-section">
+          <div class="showcase-content">
+            <h2>Быстрый тест: Оценка прибыли</h2>
+            <p>Узнайте, сколько реально вы зарабатываете, за вычетом НДС и налогов.</p>
+          </div>
+          <div class="showcase-calc">
+            <div class="showcase-inputs">
+              <label>Выручка
+                <div class="input-wrapper">
+                  <input type="number" id="scRevenue" value="5000000" oninput="updateShowcase()" />
+                  <span class="input-suffix">₸</span>
+                </div>
+              </label>
+              <label>Расходы
+                <div class="input-wrapper">
+                  <input type="number" id="scExpenses" value="2000000" oninput="updateShowcase()" />
+                  <span class="input-suffix">₸</span>
+                </div>
+              </label>
+            </div>
+            <div class="showcase-results">
+              <div class="metric dark">
+                <span>НДС (12%)</span>
+                <strong id="scVat">0</strong>
+                <div class="progress-track"><div class="progress-fill vat-fill" id="scVatBar"></div></div>
+              </div>
+              <div class="metric dark">
+                <span>Налог на прибыль (3%)</span>
+                <strong id="scTax">0</strong>
+                <div class="progress-track"><div class="progress-fill tax-fill" id="scTaxBar"></div></div>
+              </div>
+              <div class="metric dark">
+                <span>Чистая прибыль</span>
+                <strong id="scNet">0</strong>
+                <div class="progress-track"><div class="progress-fill net-fill" id="scNetBar"></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="app-shell" id="appShell" style="display: none;">
+      <!-- Fintech Decor Background Glow -->
+      <div class="bg-glow glow-1"></div>
+      <div class="bg-glow glow-2"></div>
+      <div class="bg-glow glow-3"></div>
+      
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="logo.png" alt="Finguide" class="brand-logo" />
+        </div>
+
+        <nav class="nav-list" aria-label="Разделы">
+          <button class="nav-item active" data-view="chat">
+            <i data-lucide="sparkles" class="nav-icon-svg"></i>
+            <span data-i18n="nav.chat">AI Chat</span>
+          </button>
+          <button class="nav-item" data-view="business">
+            <i data-lucide="building-2" class="nav-icon-svg"></i>
+            <span data-i18n="nav.business">Business Partner</span>
+          </button>
+          <button class="nav-item" data-view="mentor">
+            <i data-lucide="trending-up" class="nav-icon-svg"></i>
+            <span data-i18n="nav.mentor">Financial Mentor</span>
+          </button>
+        </nav>
+
+        <div class="profile-card" id="profileCard">
+          <div class="avatar-wrapper">
+             <i data-lucide="user" class="profile-avatar"></i>
+             <span class="status-dot"></span>
+          </div>
+          <div>
+            <strong id="profileName">Guest</strong>
+            <small id="profileEmail">Log in to your account</small>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" data-i18n="top.eyebrow">MVP workspace</p>
+            <h1 id="pageTitle">AI чат</h1>
+          </div>
+          <div class="top-actions">
+            <div class="language-toggle" aria-label="Language">
+              <button class="language-btn active" data-language="ru" type="button">RU</button>
+              <button class="language-btn" data-language="en" type="button">EN</button>
+            </div>
+            <button class="ghost-btn" id="clearDataBtn" title="Очистить демо-данные" data-i18n="top.reset">Сброс</button>
+            <button class="primary-btn" id="authOpenBtn">Войти</button>
+          </div>
+        </header>
+
+        <section class="view active" id="chatView" data-title="AI чат">
+          <div class="assistant-layout">
+            <section class="chat-panel">
+              <div class="chat-header">
+                <div>
+                  <h2 data-i18n="chat.heading">Универсальный ассистент</h2>
+                  <p data-i18n="chat.description">Задавайте вопросы по финансам, бизнесу, планированию и решениям.</p>
+                </div>
+                <span class="badge">General AI</span>
+              </div>
+              <div class="messages" id="generalMessages"></div>
+              <form class="message-form" data-agent="general">
+                <div class="chat-input-wrapper">
+                  <input name="message" data-placeholder="chat.placeholder" placeholder="For example: how to create a monthly financial plan?" autocomplete="off" />
+                  <button type="submit" data-i18n="actions.send">
+                    <i data-lucide="send" class="send-icon"></i>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <aside class="side-panel">
+              <h3 data-i18n="chat.quick">Быстрые сценарии</h3>
+              <button class="prompt-chip" data-agent="general" data-i18n="prompts.launch">Сделай план запуска малого бизнеса</button>
+              <button class="prompt-chip" data-agent="general" data-i18n="prompts.vat">Объясни НДС простыми словами</button>
+              <button class="prompt-chip" data-agent="general" data-i18n="prompts.costs">Как сократить расходы без стресса?</button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="businessView" data-title="Бизнес партнер">
+          <div class="business-grid">
+            <section class="chat-panel">
+              <div class="chat-header">
+                <div>
+                  <h2 data-i18n="business.heading">AI бизнес партнер</h2>
+                  <p data-i18n="business.description">Помогает предпринимателям с налогами, НДС, юнит-экономикой и операционными решениями.</p>
+                </div>
+                <span class="badge accent">B2B</span>
+              </div>
+              <div class="messages" id="businessMessages"></div>
+              <form class="message-form" data-agent="business">
+                <div class="chat-input-wrapper">
+                  <input name="message" data-placeholder="business.placeholder" placeholder="For example: check if an 18% margin is profitable" autocomplete="off" />
+                  <button type="submit" data-i18n="actions.send">
+                    <i data-lucide="send" class="send-icon"></i>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section class="calculator-panel">
+              <div class="section-title">
+                <h3 data-i18n="business.calcTitle">Расчет налогов и НДС</h3>
+                <p data-i18n="business.calcDescription">Демо-калькулятор для быстрой оценки.</p>
+              </div>
+              <label>
+                <span data-i18n="business.revenue">Revenue</span>
+                <div class="input-wrapper">
+                  <input id="revenueInput" type="number" min="0" value="2500000" />
+                  <span class="input-suffix">₸</span>
+                </div>
+              </label>
+              <label>
+                <span data-i18n="business.expenses">Expenses</span>
+                <div class="input-wrapper">
+                  <input id="expensesInput" type="number" min="0" value="1100000" />
+                  <span class="input-suffix">₸</span>
+                </div>
+              </label>
+              <label>
+                <span data-i18n="business.vatRate">VAT Rate, %</span>
+                <div class="input-wrapper">
+                  <input id="vatInput" type="number" min="0" max="30" value="12" />
+                  <span class="input-suffix">%</span>
+                </div>
+              </label>
+              <label>
+                <span data-i18n="business.profitTaxRate">Profit Tax Rate, %</span>
+                <div class="input-wrapper">
+                  <input id="profitTaxInput" type="number" min="0" max="40" value="20" />
+                  <span class="input-suffix">%</span>
+                </div>
+              </label>
+              <div class="metric-grid">
+                <div class="metric">
+                  <span data-i18n="business.vat">VAT</span>
+                  <strong id="vatResult">0</strong>
+                  <div class="progress-track"><div class="progress-fill vat-fill" id="vatBar"></div></div>
+                </div>
+                <div class="metric">
+                  <span data-i18n="business.tax">Tax</span>
+                  <strong id="taxResult">0</strong>
+                  <div class="progress-track"><div class="progress-fill tax-fill" id="taxBar"></div></div>
+                </div>
+                <div class="metric">
+                  <span data-i18n="business.net">Net Profit</span>
+                  <strong id="netResult">0</strong>
+                  <div class="progress-track"><div class="progress-fill net-fill" id="netBar"></div></div>
+                </div>
+                <div class="metric">
+                  <span data-i18n="business.margin">Margin</span>
+                  <strong id="marginResult">0%</strong>
+                  <div class="progress-track"><div class="progress-fill margin-fill" id="marginBar"></div></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="mentorView" data-title="Финансовый ментор">
+          <div class="mentor-grid">
+            <section class="planner-panel">
+              <div class="section-title">
+                <h3 data-i18n="mentor.planTitle">Личный финансовый план</h3>
+                <p data-i18n="mentor.planDescription">Введите базовые цифры, чтобы ментор дал рекомендации.</p>
+              </div>
+              <div class="planner-fields">
+                <label>
+                  <span data-i18n="mentor.income">Доход в месяц</span>
+                  <input id="incomeInput" type="number" min="0" value="450000" />
+                </label>
+                <label>
+                  <span data-i18n="mentor.expenses">Расходы в месяц</span>
+                  <input id="personalExpensesInput" type="number" min="0" value="360000" />
+                </label>
+                <label>
+                  <span data-i18n="mentor.debt">Долги</span>
+                  <input id="debtInput" type="number" min="0" value="250000" />
+                </label>
+                <label>
+                  <span data-i18n="mentor.goal">Цель накоплений</span>
+                  <input id="goalInput" type="number" min="0" value="1000000" />
+                </label>
+              </div>
+              <div class="plan-output" id="planOutput"></div>
+            </section>
+
+            <section class="chat-panel mentor-chat">
+              <div class="chat-header">
+                <div>
+                  <h2 data-i18n="mentor.heading">AI финансовый ментор</h2>
+                  <p data-i18n="mentor.description">Помогает физическим лицам стабилизировать бюджет и повысить финансовую грамотность.</p>
+                </div>
+                <span class="badge green">Mentor</span>
+              </div>
+              <div class="messages" id="mentorMessages"></div>
+              <form class="message-form" data-agent="mentor">
+                <div class="chat-input-wrapper">
+                  <input name="message" data-placeholder="mentor.placeholder" placeholder="For example: help me choose a debt payoff strategy" autocomplete="off" />
+                  <button type="submit" data-i18n="actions.send">
+                    <i data-lucide="send" class="send-icon"></i>
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="auth-modal" id="authModal">
+      <form class="auth-card" id="authForm">
+        <button class="modal-close" type="button" id="authCloseBtn" aria-label="Закрыть">×</button>
+        <p class="eyebrow" data-i18n="auth.account">Аккаунт</p>
+        <h2 id="authTitle">Вход</h2>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-mode="login">Вход</button>
+          <button type="button" class="auth-tab" data-mode="register">Регистрация</button>
+        </div>
+        <label class="name-field hidden">
+          <span data-i18n="auth.name">Имя</span>
+          <input id="nameField" type="text" autocomplete="name" />
+        </label>
+        <label>
+          <span data-i18n="auth.email">Email</span>
+          <input id="emailField" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          <span data-i18n="auth.password">Пароль</span>
+          <input id="passwordField" type="password" autocomplete="current-password" required />
+        </label>
+        <p class="auth-error" id="authError"></p>
+        <button class="primary-btn wide" type="submit" id="authSubmit">Войти</button>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
